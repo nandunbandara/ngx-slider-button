@@ -24,11 +24,14 @@ export class NgxSliderButtonComponent implements OnInit {
 
   private readonly COMPLETE_POSITION_DIFFERENCE_THRESHOLD = 120;
   private readonly DEFAULT_TIMEOUT = 500;
-  private readonly DEFAULT_INIT_POSITION = -1;
+  private readonly DEFAULT_INIT_MOUSE_POSITION = -1;
+  private readonly DEFAULT_INIT_SLIDER_POSITION = '-16rem';
+  private readonly INIT_CLASS_NAME = 'slide-init';
+  private readonly COMPLETE_CLASS_NAME = 'slide-complete';
 
   private isTouched: boolean = false;
   private isComplete: boolean = false;
-  private initPosition: number = this.DEFAULT_INIT_POSITION;
+  private initPosition: number = this.DEFAULT_INIT_MOUSE_POSITION;
   private positionDifference: number = 0;
   private animationFrameId: number = 0;
 
@@ -49,7 +52,7 @@ export class NgxSliderButtonComponent implements OnInit {
 
   public onTouchEnd() {
     this.isTouched = false;
-    this.initPosition = this.DEFAULT_INIT_POSITION;
+    this.initPosition = this.DEFAULT_INIT_MOUSE_POSITION;
 
     if (this.positionDifference > this.COMPLETE_POSITION_DIFFERENCE_THRESHOLD) {
       this.isComplete = true;
@@ -78,24 +81,24 @@ export class NgxSliderButtonComponent implements OnInit {
   }
 
   private moveSlider(slider?: ElementRef, positionDifference: number = 0) {
-    return function() {
+    return () => {
       if (slider) {
         slider
           .nativeElement
           .style
-          .transform = `translateX(calc(-16rem + ${positionDifference}px))`;
+          .transform = `translateX(calc(${this.DEFAULT_INIT_SLIDER_POSITION} + ${positionDifference}px))`;
       }
     }
   }
 
   private resetSliderPosition() {
     if (this.slider) {
-      this.slider.nativeElement.classList.add("slide-init");
+      this.slider.nativeElement.classList.add(this.INIT_CLASS_NAME);
       setTimeout(() => {
         if (this.slider) {
           this.slider.nativeElement.style = "";
-          this.slider.nativeElement.classList.remove("slide-init");
-          this.slider.nativeElement.classList.remove("slide-complete");
+          this.slider.nativeElement.classList.remove(this.INIT_CLASS_NAME);
+          this.slider.nativeElement.classList.remove(this.COMPLETE_CLASS_NAME);
         }
       }, this.DEFAULT_TIMEOUT);
     }
@@ -103,8 +106,8 @@ export class NgxSliderButtonComponent implements OnInit {
 
   private moveSliderToComplete() {
     if (this.slider) {
-      this.slider.nativeElement.classList.remove("slide-init");
-      this.slider.nativeElement.classList.add("slide-complete");
+      this.slider.nativeElement.classList.remove(this.INIT_CLASS_NAME);
+      this.slider.nativeElement.classList.add(this.COMPLETE_CLASS_NAME);
       setTimeout(() => {
         if (this.slider) {
           this.slider.nativeElement.style.transform = "translateX(0rem)";
@@ -112,5 +115,4 @@ export class NgxSliderButtonComponent implements OnInit {
       }, this.DEFAULT_TIMEOUT);
     }
   }
-
 }
