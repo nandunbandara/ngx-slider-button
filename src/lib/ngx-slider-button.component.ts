@@ -24,10 +24,11 @@ export class NgxSliderButtonComponent implements OnInit {
 
   private readonly COMPLETE_POSITION_DIFFERENCE_THRESHOLD = 120;
   private readonly DEFAULT_TIMEOUT = 500;
+  private readonly DEFAULT_INIT_POSITION = -1;
 
   private isTouched: boolean = false;
   private isComplete: boolean = false;
-  private initPosition: number = -1;
+  private initPosition: number = this.DEFAULT_INIT_POSITION;
   private positionDifference: number = 0;
   private animationFrameId: number = 0;
 
@@ -48,7 +49,7 @@ export class NgxSliderButtonComponent implements OnInit {
 
   public onTouchEnd() {
     this.isTouched = false;
-    this.initPosition = -1;
+    this.initPosition = this.DEFAULT_INIT_POSITION;
 
     if (this.positionDifference > this.COMPLETE_POSITION_DIFFERENCE_THRESHOLD) {
       this.isComplete = true;
