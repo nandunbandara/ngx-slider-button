@@ -23,6 +23,8 @@ import {Component, ElementRef, EventEmitter, OnInit, Output, ViewChild} from '@a
 export class NgxSliderButtonComponent implements OnInit {
 
   private readonly COMPLETE_POSITION_DIFFERENCE_THRESHOLD = 120;
+  private readonly DEFAULT_TIMEOUT = 500;
+
   private isTouched: boolean = false;
   private isComplete: boolean = false;
   private initPosition: number = -1;
@@ -94,7 +96,7 @@ export class NgxSliderButtonComponent implements OnInit {
           this.slider.nativeElement.classList.remove("slide-init");
           this.slider.nativeElement.classList.remove("slide-complete");
         }
-      }, 500);
+      }, this.DEFAULT_TIMEOUT);
     }
   }
 
@@ -106,7 +108,7 @@ export class NgxSliderButtonComponent implements OnInit {
         if (this.slider) {
           this.slider.nativeElement.style.transform = "translateX(0rem)";
         }
-      }, 500);
+      }, this.DEFAULT_TIMEOUT);
     }
   }
 
