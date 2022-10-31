@@ -8,9 +8,13 @@ import {Component, ElementRef, EventEmitter, OnInit, Output, ViewChild} from '@a
            #slider
            class="slider"
            (mousedown)="onTouch($event)"
-           (mouseup)="onTouchEnd()"
-           (mousemove)="onTouchMove($event)"
+           (mouseup)="onMouseUp()"
+           (mousemove)="onMouseMove($event)"
            (mouseleave)="onTouchLeave()"
+           (touchstart)="onTouchStart($event)"
+           (touchmove)="onTouchMove($event)"
+           (touchend)="onTouchEnd()"
+           (touchcancel)="onTouchEnd()"
       >
         >
       </div>
@@ -43,10 +47,17 @@ export class NgxSliderButtonComponent implements OnInit {
 
   ngOnInit(): void {}
 
-  public onTouch($event: MouseEvent) {
+  public onTouchStart($event: TouchEvent) {
     if (!this.isComplete) {
       this.isTouched = true;
-      this.initPosition = $event.clientX;
+      this.initPosition = $event.touches[0].clientX;
+    }
+  }
+
+  public onTouchMove($event: TouchEvent) {
+    if (!this.isComplete && this.isTouched) {
+      this.positionDifference = $event.touches[0].clientX - this.initPosition;
+      this.animationFrameId = requestAnimationFrame(this.moveSlider(this.slider, this.positionDifference));
     }
   }
 
@@ -65,7 +76,29 @@ export class NgxSliderButtonComponent implements OnInit {
     cancelAnimationFrame(this.animationFrameId);
   }
 
-  public onTouchMove($event: MouseEvent) {
+  public onTouch($event: MouseEvent) {
+    if (!this.isComplete) {
+      this.isTouched = true;
+      this.initPosition = $event.clientX;
+    }
+  }
+
+  public onMouseUp() {
+    this.isTouched = false;
+    this.initPosition = this.DEFAULT_INIT_MOUSE_POSITION;
+
+    if (this.positionDifference > this.COMPLETE_POSITION_DIFFERENCE_THRESHOLD) {
+      this.isComplete = true;
+      this.onComplete.emit(true);
+      this.moveSliderToComplete();
+    } else {
+      this.resetSliderPosition();
+    }
+
+    cancelAnimationFrame(this.animationFrameId);
+  }
+
+  public onMouseMove($event: MouseEvent) {
     if (!this.isComplete && this.isTouched) {
       this.positionDifference = $event.clientX - this.initPosition;
       this.animationFrameId = requestAnimationFrame(this.moveSlider(this.slider, this.positionDifference));
